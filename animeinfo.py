@@ -21,6 +21,8 @@ class NodeInfo:
         # カッコを改行化
         title = title.replace("(", "\n(")
         title = title.replace(")", ")\n")
+        title = title.replace("（", "\n（")
+        title = title.replace("）", "）\n")
         title = title.replace("「", "\n「")
         title = title.replace("」", "」\n")
         title = title.replace("『", "\n『")
@@ -56,8 +58,10 @@ class NodeInfo:
         title = title.replace("・", "\n・\n")
         title = title.replace("／", "\n／\n")
         title = title.replace("＼", "\n＼\n")
+
         # 連続する改行を1つに
         title = re.sub(r'\n+', '\n', title)
+
         # 先頭と末尾の改行を削除
         title = title.strip("\n")
         return title
