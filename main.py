@@ -13,7 +13,7 @@ NY_INIT = 10 # 初期ノードのy数
 DELTA_INIT = 250 # 初期ノードの間隔
 N_NEW_NODE = 3 # クリック時に追加するノード数
 LENGTH_EDGE = 180 # クリック時に追加するノードの距離
-ANGLE_NEW_NODE = np.pi/3 # クリック時に追加するノードの角度
+ANGLE_NEW_NODE = np.pi/4 # クリック時に追加するノードの角度
 SIZE_NODE = 75 # ノードのサイズ
 IS_DEBUG = bool(os.getenv("IS_DEBUG", True))
 
@@ -198,21 +198,36 @@ def add_nodes_on_click(nodeData, elements, n_new=N_NEW_NODE, length=LENGTH_EDGE,
         angle_center = np.arctan2(y0 - y_from, x0 - x_from)
         angles = angle_center + np.linspace(-angle_max, angle_max, n_new+2)[1:-1]
     else:
-        angles = [2 * np.pi * i / n_new for i in range(n_new)]
+        angles = np.array([2 * np.pi * i / n_new for i in range(n_new)])
 
     node_info = nodes[clicked_node_id][0]
     cnt = 0
+    length_tmp = calc_length(length, nodes, x0, y0, angles)
     for node_info_new in node_info.nodes:
         if node_info_new.node_id in nodes.keys():
             continue
-        x = x0 + length * np.cos(angles[cnt])
-        y = y0 + length * np.sin(angles[cnt])
+        x = x0 + length_tmp * np.cos(angles[cnt])
+        y = y0 + length_tmp * np.sin(angles[cnt])
         cnt += 1
         nodes[node_info_new.node_id] = (node_info_new, x, y)
         edges.append((clicked_node_id, node_info_new.node_id))
         if cnt == n_new:
             break
     return create_tree_elements(nodes, edges)
+def calc_length(length, nodes, x0, y0, thetas, delta_r=SIZE_NODE):
+    xs = np.array([nodes[k][1] for k in nodes.keys()])
+    ys = np.array([nodes[k][2] for k in nodes.keys()])
+    lengths = np.arange(1, 3, 0.1)*length
+    for length_tmp in lengths:
+        xs_0 = x0 + length_tmp * np.cos(thetas)
+        ys_0 = y0 + length_tmp * np.sin(thetas)
+        r_min = length
+        for x_0,y_0 in zip(xs,ys):
+            rs = np.sqrt((x_0 - xs_0)**2 + (y_0 - ys_0)**2)
+            r_min = min(r_min, np.min(rs))
+        if r_min > delta_r:
+            return length_tmp
+    return lengths[-1]
 
 @app.callback(
     Output('tree-graph', 'elements', allow_duplicate=True),
