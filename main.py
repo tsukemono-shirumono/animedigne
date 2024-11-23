@@ -1,6 +1,5 @@
 import random
 from pathlib import Path
-import os
 
 import dash
 import dash_cytoscape as cyto
@@ -237,9 +236,13 @@ def create_new_node(nodes, edges, node_id, n_new=N_NEW_NODE, length=LENGTH_EDGE,
     return nodes_new, edges_new
 
 def calc_length(length, nodes, x0, y0, thetas, delta_r=SIZE_NODE):
-    xs = np.array([nodes[k][1] for k in nodes.keys()])
-    ys = np.array([nodes[k][2] for k in nodes.keys()])
-    lengths = np.arange(1, 3, 0.1)*length
+    if len(nodes)>100:
+        nodes_tmp = {k:v for i,(k,v) in enumerate(nodes.items()) if i>=len(nodes)-99}
+    else:
+        nodes_tmp = {k:v for k,v in nodes.items()}
+    xs = np.array([nodes_tmp[k][1] for k in nodes_tmp.keys()])
+    ys = np.array([nodes_tmp[k][2] for k in nodes_tmp.keys()])
+    lengths = np.arange(1, 3, 0.2)*length
     for length_tmp in lengths:
         xs_0 = x0 + length_tmp * np.cos(thetas)
         ys_0 = y0 + length_tmp * np.sin(thetas)
