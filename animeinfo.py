@@ -13,7 +13,7 @@ class NodeInfo:
         self.extra_info = ""
         self._data = None
         self.extra_info = ""
-        self.bgcolor = "MediumVioletRed"
+        # self.bgcolor = "MediumVioletRed"
 class SubInfo(NodeInfo):
     def __init__(self, node_id, node_id_from, nodes_to):
         super().__init__()
@@ -37,6 +37,18 @@ class SubInfo(NodeInfo):
     @property
     def description(self) -> str:
         return re.sub(r'\[.*?\]', '', self.data["SubinfoDescription"])
+    @property
+    def bgcolor(self) -> str:
+        kind = self.data.get("SubinfoKind", None)
+        return {
+            "cv": "#000000",
+            "duration": "#0b3d7e",
+            "genre": "#0b3d7e",
+            "source": "#0b3d7e",
+            "tag": "#0b3d7e",
+            "thema_song_artist": "#0b3d7e",
+            "year": "#0b3d7e",
+        }.get(kind, "#0b3d7e")
 class AnimeInfo(NodeInfo):
     def __init__(self, node_id):
         super().__init__()
