@@ -14,6 +14,52 @@ class NodeInfo:
         self._data = None
         self.extra_info = ""
         # self.bgcolor = "MediumVioletRed"
+    def trans_view_title(self, title):
+        # 空白を改行化
+        title = title.replace(" ", "\n")
+        # カッコを改行化
+        title = title.replace("(", "\n(")
+        title = title.replace(")", ")\n")
+        title = title.replace("「", "\n「")
+        title = title.replace("」", "」\n")
+        title = title.replace("『", "\n『")
+        title = title.replace("』", "』\n")
+        title = title.replace("【", "\n【")
+        title = title.replace("】", "】\n")
+        title = title.replace("〔", "\n〔")
+        title = title.replace("〕", "〕\n")
+        title = title.replace("《", "\n《")
+        title = title.replace("》", "》\n")
+        title = title.replace("〈", "\n〈")
+        title = title.replace("〉", "〉\n")
+        title = title.replace("｛", "\n｛")
+        title = title.replace("｝", "｝\n")
+        title = title.replace("｟", "\n｟")
+        title = title.replace("｠", "｠\n")
+        title = title.replace("｢", "\n｢")
+        title = title.replace("｣", "｣\n")
+
+        # 一部の記号を改行化
+        title = title.replace(":", ":\n")
+        title = title.replace("：", "：\n")
+        title = title.replace(";", ";\n")
+        title = title.replace("；", "；\n")
+        title = title.replace(",", ",\n")
+        title = title.replace("、", "、\n")
+        title = title.replace("。", "。\n")
+        title = title.replace("．", "．\n")
+        title = title.replace("!", "!\n")
+        title = title.replace("！", "！\n")
+        title = title.replace("?", "?\n")
+        title = title.replace("？", "？\n")
+        title = title.replace("・", "\n・\n")
+        title = title.replace("／", "\n／\n")
+        title = title.replace("＼", "\n＼\n")
+        # 連続する改行を1つに
+        title = re.sub(r'\n+', '\n', title)
+        # 先頭と末尾の改行を削除
+        title = title.strip("\n")
+        return title
 class SubInfo(NodeInfo):
     def __init__(self, node_id, node_id_from, nodes_to):
         super().__init__()
@@ -33,7 +79,8 @@ class SubInfo(NodeInfo):
         return self._data
     @property
     def title(self) -> str:
-        return self.data["Subinfo"].replace(" ", "\n")
+        title = self.data["Subinfo"].replace(" ", "\n")
+        return self.trans_view_title(title)
     @property
     def description(self) -> str:
         return re.sub(r'\[.*?\]', '', self.data["SubinfoDescription"])
@@ -84,7 +131,8 @@ class AnimeInfo(NodeInfo):
         return self._data
     @property
     def title(self) -> str:
-        return self.data["title"].replace(" ", "\n")
+        title = self.data["title"].replace(" ", "\n")
+        return self.trans_view_title(title)
     @property
     def description(self) -> str:
         return re.sub(r'\[.*?\]', '', self.data["description"])
