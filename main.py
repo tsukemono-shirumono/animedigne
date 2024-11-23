@@ -227,4 +227,4 @@ def reset_page(n_clicks):
     return create_tree_elements(nodes, edges)
 # アプリ実行
 if __name__ == '__main__':
-    app.run_server(host="0.0.0.0", port=8050, debug=IS_DEBUG)
+    app.run_server(host="0.0.0.0", port=8080, debug=IS_DEBUG)
