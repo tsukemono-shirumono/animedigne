@@ -56,11 +56,12 @@ def create_tree_elements(nodes, edges):
         }
         elements.append(element)
     for edge in edges:
-        source, target = edge
+        source, target, label = edge
         element = {
             'data': {
                 'source': source,
-                'target': target
+                'target': target,
+                'label': label,
             }
         }
         elements.append(element)
@@ -109,7 +110,16 @@ cytoscape = cyto.Cytoscape(
             'selector': 'edge',
             'style': {
                 'width': 2,
-                'line-color': '#ccc'
+                'line-color': '#ccc',
+                'label': 'data(label)',
+                'font-size': '8px',
+                'text-rotation': 'autorotate',
+                'text-margin-y': '-10px',
+                'text-outline-width': 0,
+                'text-outline-color': 'transparent',
+                'text-background-padding': '2px',
+                'text-background-shape': 'roundrectangle',
+                'text-background-padding-relative-to': 'none',
             }
         },
     ]
@@ -212,14 +222,14 @@ def create_new_node(nodes, edges, node_id, n_new=N_NEW_NODE, length=LENGTH_EDGE,
     length_tmp = calc_length(length, nodes, x0, y0, angles)
     nodes_new = {}
     edges_new = []
-    for node_info_new in node_info.nodes:
+    for node_info_new, edge_label in zip(node_info.nodes, node_info.edges_name):
         if node_info_new.node_id in nodes.keys():
             continue
         x = x0 + length_tmp * np.cos(angles[cnt])
         y = y0 + length_tmp * np.sin(angles[cnt])
         cnt += 1
         nodes_new[node_info_new.node_id] = (node_info_new, x, y)
-        edges_new.append((node_id, node_info_new.node_id))
+        edges_new.append((node_id, node_info_new.node_id, edge_label))
         if cnt == n_new:
             break
     return nodes_new, edges_new
