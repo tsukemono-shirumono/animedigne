@@ -17,7 +17,6 @@ N_NEW_NODE = 3 # クリック時に追加するノード数
 LENGTH_EDGE = 180 # クリック時に追加するノードの距離
 ANGLE_NEW_NODE = np.pi/3.5 # クリック時に追加するノードの角度
 SIZE_NODE = 75 # ノードのサイズ
-IS_DEBUG = bool(os.getenv("IS_DEBUG", True))
 
 def init_page():
     nodes_id = random.choices([path.stem for path in Path("data/node_anime/").glob("*.json")], k=NX_INIT*NY_INIT)
@@ -293,4 +292,4 @@ def reset_page(n_clicks):
 # ############################## app ####################################
 # アプリ実行
 if __name__ == '__main__':
-    app.run_server(host="0.0.0.0", port=8080, debug=IS_DEBUG)
+    app.run_server(host="0.0.0.0", port=8080, debug=False)

@@ -3,5 +3,4 @@ WORKDIR /app
 COPY . /app
 RUN pip install -r requirements.txt
 EXPOSE 8080
-ENV IS_DEBUG False
 CMD ["python", "main.py"]
