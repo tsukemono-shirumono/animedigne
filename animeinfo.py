@@ -65,16 +65,15 @@ class SubInfo(NodeInfo):
     def __init__(self, node_id, node_id_from, nodes_to):
         super().__init__()
         self.node_id = f"{node_id}-{node_id_from}"
+        self.node_id_orig = str(node_id)
         self.path_node_parent = Path("data/node_subinfo/")
         self.path_node = self.path_node_parent/f"{node_id}.json"
         self._nodes_to = nodes_to
         self.imageURL = None
+        self.edges_name = []
     @property
     def nodes(self) -> list:
         return [AnimeInfo(node_id) for node_id in self._nodes_to]
-    @property
-    def edges_name(self) -> list:
-        return ["" for _ in self._nodes_to]
     @property
     def data(self) -> dict:
         if self._data is None:
@@ -110,15 +109,22 @@ class AnimeInfo(NodeInfo):
         self.path_edge = self.path_edge_parent/f"{node_id}.json"
         self.path_edge_label_parent = Path("data/edge_label/")
         self.path_edge_label = self.path_edge_label_parent/f"{node_id}.json"
+        self.path_edge_label_next_parent = Path("data/edge_label_next/")
+        self.path_edge_label_next = self.path_edge_label_next_parent/f"{node_id}.json"
         self.bgcolor = "#0b3d7e"
     @property
     def nodes(self) -> list:
         with open(self.path_edge, 'r', encoding='utf-8') as f:
             dics = json.load(f, object_pairs_hook=OrderedDict)
         dics = [
-            SubInfo(k, self.node_id, v)
+            SubInfo(k, self.node_id, v, )
             for k,v in dics.items()
         ]
+        # ノードラベル編集
+        with open(self.path_edge_label_next, 'r', encoding='utf-8') as f:
+            map_cv = json.load(f, object_pairs_hook=OrderedDict)
+        for subinfo in dics:
+            subinfo.edges_name = map_cv[str(subinfo.node_id_orig)]
         # タグとカテゴリの重複を避ける
         ret = []
         names = set()
