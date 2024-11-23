@@ -251,29 +251,30 @@ def reset_page(n_clicks):
     nodes, edges = init_page()
     return create_tree_elements(nodes, edges)
 
+# マウスオーバー（一旦保留）
+# @app.callback(
+#     Output('tree-graph', 'elements', allow_duplicate=True),
+#     [Input('tree-graph', 'mouseoverNodeData')],
+#     prevent_initial_callbacks=True
+# )
+# def add_nodes_on_hover(nodeData):
+#     if len(edges) == 0:
+#         return create_tree_elements(nodes, edges)
+#     # global nodes, edges
+#     if not nodeData:
+#         return create_tree_elements(nodes, edges)
+#     clicked_node_id = nodeData['id']
+#     if clicked_node_id not in nodes.keys():
+#         return create_tree_elements(nodes, edges)
+#     nodes_dammy = {k:v for k,v in nodes.items()}
+#     edges_dammy = [e for e in edges]
+#     nodes_new, edges_new = create_new_node(nodes_dammy, edges_dammy, clicked_node_id, n_new=3)
+#     for node_id in nodes_new.keys():
+#         nodes_new[node_id][0].opacity = 0.5
+#         nodes_dammy[node_id] = nodes_new[node_id]
+#     edges_dammy.extend(edges_new)
+#     return create_tree_elements(nodes_dammy, edges_dammy)
 
-@app.callback(
-    Output('tree-graph', 'elements', allow_duplicate=True),
-    [Input('tree-graph', 'mouseoverNodeData')],
-    prevent_initial_callbacks=True
-)
-def add_nodes_on_hover(nodeData):
-    if len(edges) == 0:
-        return create_tree_elements(nodes, edges)
-    # global nodes, edges
-    if not nodeData:
-        return create_tree_elements(nodes, edges)
-    clicked_node_id = nodeData['id']
-    if clicked_node_id not in nodes.keys():
-        return create_tree_elements(nodes, edges)
-    nodes_dammy = {k:v for k,v in nodes.items()}
-    edges_dammy = [e for e in edges]
-    nodes_new, edges_new = create_new_node(nodes_dammy, edges_dammy, clicked_node_id, n_new=3)
-    for node_id in nodes_new.keys():
-        nodes_new[node_id][0].opacity = 0.5
-        nodes_dammy[node_id] = nodes_new[node_id]
-    edges_dammy.extend(edges_new)
-    return create_tree_elements(nodes_dammy, edges_dammy)
 
 # ############################## app ####################################
 # アプリ実行
