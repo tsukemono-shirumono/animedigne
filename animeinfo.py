@@ -73,8 +73,8 @@ class SubInfo(NodeInfo):
     def nodes(self) -> list:
         return [AnimeInfo(node_id) for node_id in self._nodes_to]
     @property
-    def edge_name(self) -> list:
-        return ["hogehoge" for node_id in self._nodes_to]
+    def edges_name(self) -> list:
+        return ["" for _ in self._nodes_to]
     @property
     def data(self) -> dict:
         if self._data is None:
@@ -108,6 +108,8 @@ class AnimeInfo(NodeInfo):
         self.path_node = self.path_node_parent/f"{node_id}.json"
         self.path_edge_parent = Path("data/edge/")
         self.path_edge = self.path_edge_parent/f"{node_id}.json"
+        self.path_edge_label_parent = Path("data/edge_label/")
+        self.path_edge_label = self.path_edge_label_parent/f"{node_id}.json"
         self.bgcolor = "#0b3d7e"
     @property
     def nodes(self) -> list:
@@ -128,8 +130,10 @@ class AnimeInfo(NodeInfo):
             ret.append(info)
         return ret
     @property
-    def edge_name(self) -> list:
-        return ["fugafuga" for node_id in self._nodes_to]
+    def edges_name(self) -> list:
+        with open(self.path_edge_label, 'r', encoding='utf-8') as f:
+            lst = json.load(f, object_pairs_hook=OrderedDict)
+        return list(lst)
     @property
     def data(self) -> dict:
         if self._data is None:
