@@ -1,10 +1,12 @@
+import random
+from pathlib import Path
+import os
+
 import dash
 import dash_cytoscape as cyto
 from dash import html, Input, Output, State, no_update
 import numpy as np
-import random
-from pathlib import Path
-import os
+from flask_cors import CORS
 
 from animeinfo import AnimeInfo
 
@@ -33,6 +35,7 @@ def init_page():
 
 cyto.load_extra_layouts()
 app = dash.Dash(__name__)
+CORS(app.server)
 app.config.prevent_initial_callbacks = 'initial_duplicate'
 nodes, edges = init_page()
 

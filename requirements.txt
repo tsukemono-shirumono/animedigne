@@ -1,3 +1,4 @@
 dash
 dash-cytoscape
 numpy
+flask_cors
