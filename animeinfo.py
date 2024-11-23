@@ -13,7 +13,7 @@ class NodeInfo:
         self.extra_info = ""
         self._data = None
         self.extra_info = ""
-        self.bgcolor = "MediumVioletRed "
+        self.bgcolor = "MediumVioletRed"
 class SubInfo(NodeInfo):
     def __init__(self, node_id, node_id_from, nodes_to):
         super().__init__()
@@ -54,7 +54,16 @@ class AnimeInfo(NodeInfo):
             SubInfo(k, self.node_id, v)
             for k,v in dics.items()
         ]
-        return dics
+        # タグとカテゴリの重複を避ける
+        ret = []
+        names = set()
+        for info in dics:
+            name = info.title
+            if name in names:
+                continue
+            names.add(name)
+            ret.append(info)
+        return ret
     @property
     def data(self) -> dict:
         if self._data is None:
