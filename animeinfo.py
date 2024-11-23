@@ -73,6 +73,9 @@ class SubInfo(NodeInfo):
     def nodes(self) -> list:
         return [AnimeInfo(node_id) for node_id in self._nodes_to]
     @property
+    def edge_name(self) -> list:
+        return ["hogehoge" for node_id in self._nodes_to]
+    @property
     def data(self) -> dict:
         if self._data is None:
             with open(self.path_node, 'r', encoding='utf-8') as f:
@@ -124,6 +127,9 @@ class AnimeInfo(NodeInfo):
             names.add(name)
             ret.append(info)
         return ret
+    @property
+    def edge_name(self) -> list:
+        return ["fugafuga" for node_id in self._nodes_to]
     @property
     def data(self) -> dict:
         if self._data is None:
