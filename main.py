@@ -1,6 +1,6 @@
 import dash
 import dash_cytoscape as cyto
-from dash import html, Input, Output, State
+from dash import html, Input, Output, State, no_update
 import numpy as np
 import random
 from pathlib import Path
@@ -46,7 +46,8 @@ def create_tree_elements(nodes, edges):
                 'id': node_id,
                 'label': info.title,
                 'image': imageURL,
-                'bgcolor': info.bgcolor
+                'bgcolor': info.bgcolor,
+                'opacity': info.opacity
             },
             'position': {
                 'x': x,
@@ -101,6 +102,7 @@ cytoscape = cyto.Cytoscape(
                 'text-max-width': '100px',
                 'text-overflow-wrap': 'break-word',
                 'text-overflow': 'ellipsis',
+                'opacity': 'data(opacity)',
             }
         },
         {
@@ -132,6 +134,8 @@ def update_sidebar(nodeData):
         bgcolor = '#0b3d7e'
     else:
         node_id = nodeData['id']
+        if node_id not in nodes:
+            return no_update
         info = nodes[node_id][0]
         img = info.imageURL
         bgcolor = info.bgcolor
@@ -149,7 +153,6 @@ def update_sidebar(nodeData):
                 'color': 'white',
                 'padding': '10px',
                 "border-radius": "5px",
-                "opacity": "1",
             }
         )
     else:
@@ -171,7 +174,7 @@ def update_sidebar(nodeData):
     [State('tree-graph', 'elements')],
     prevent_initial_callbacks=True
 )
-def add_nodes_on_click(nodeData, elements, n_new=N_NEW_NODE, length=LENGTH_EDGE, angle_max = ANGLE_NEW_NODE):
+def add_nodes_on_click(nodeData, elements, ):
     global nodes, edges
     if not nodeData:
         return create_tree_elements(nodes, edges)
@@ -180,40 +183,47 @@ def add_nodes_on_click(nodeData, elements, n_new=N_NEW_NODE, length=LENGTH_EDGE,
         if node_id in nodes.keys():
             nodes[node_id] = (nodes[node_id][0], element['position']['x'], element['position']['y'])
     clicked_node_id = nodeData['id']
-    x0, y0 = nodes[clicked_node_id][1], nodes[clicked_node_id][2]
-
-    to_node_ids = {i[0] for i in edges}
-    from_node_idmap = {i[1]:i[0] for i in edges}
     if len(edges) == 0:
         mode_ids = [node_id for node_id in nodes.keys() if node_id!=clicked_node_id]
         for node_id in mode_ids:
             del nodes[node_id]
-        create_tree_elements(nodes, edges)
+    nodes_new, edges_new = create_new_node(nodes, edges, clicked_node_id)
+    nodes.update(nodes_new)
+    edges.extend(edges_new)
+    return create_tree_elements(nodes, edges)
 
-    if clicked_node_id in to_node_ids:
-        return create_tree_elements(nodes, edges)
-    elif clicked_node_id in from_node_idmap.keys():
-        from_node_id = from_node_idmap[clicked_node_id]
+def create_new_node(nodes, edges, node_id, n_new=N_NEW_NODE, length=LENGTH_EDGE, angle_max = ANGLE_NEW_NODE):
+    x0, y0 = nodes[node_id][1], nodes[node_id][2]
+    to_node_ids = {i[0] for i in edges}
+    from_node_idmap = {i[1]:i[0] for i in edges}
+
+    if node_id in to_node_ids:
+        return nodes, edges
+    elif node_id in from_node_idmap.keys():
+        from_node_id = from_node_idmap[node_id]
         x_from, y_from = nodes[from_node_id][1], nodes[from_node_id][2]
         angle_center = np.arctan2(y0 - y_from, x0 - x_from)
         angles = angle_center + np.linspace(-angle_max, angle_max, n_new+2)[1:-1]
     else:
         angles = np.array([2 * np.pi * i / n_new for i in range(n_new)])
 
-    node_info = nodes[clicked_node_id][0]
+    node_info = nodes[node_id][0]
     cnt = 0
     length_tmp = calc_length(length, nodes, x0, y0, angles)
+    nodes_new = {}
+    edges_new = []
     for node_info_new in node_info.nodes:
         if node_info_new.node_id in nodes.keys():
             continue
         x = x0 + length_tmp * np.cos(angles[cnt])
         y = y0 + length_tmp * np.sin(angles[cnt])
         cnt += 1
-        nodes[node_info_new.node_id] = (node_info_new, x, y)
-        edges.append((clicked_node_id, node_info_new.node_id))
+        nodes_new[node_info_new.node_id] = (node_info_new, x, y)
+        edges_new.append((node_id, node_info_new.node_id))
         if cnt == n_new:
             break
-    return create_tree_elements(nodes, edges)
+    return nodes_new, edges_new
+
 def calc_length(length, nodes, x0, y0, thetas, delta_r=SIZE_NODE):
     xs = np.array([nodes[k][1] for k in nodes.keys()])
     ys = np.array([nodes[k][2] for k in nodes.keys()])
@@ -240,6 +250,32 @@ def reset_page(n_clicks):
     # # if not ctx.triggered and n_clicks > 0:
     nodes, edges = init_page()
     return create_tree_elements(nodes, edges)
+
+
+@app.callback(
+    Output('tree-graph', 'elements', allow_duplicate=True),
+    [Input('tree-graph', 'mouseoverNodeData')],
+    prevent_initial_callbacks=True
+)
+def add_nodes_on_hover(nodeData):
+    if len(edges) == 0:
+        return create_tree_elements(nodes, edges)
+    # global nodes, edges
+    if not nodeData:
+        return create_tree_elements(nodes, edges)
+    clicked_node_id = nodeData['id']
+    if clicked_node_id not in nodes.keys():
+        return create_tree_elements(nodes, edges)
+    nodes_dammy = {k:v for k,v in nodes.items()}
+    edges_dammy = [e for e in edges]
+    nodes_new, edges_new = create_new_node(nodes_dammy, edges_dammy, clicked_node_id, n_new=3)
+    for node_id in nodes_new.keys():
+        nodes_new[node_id][0].opacity = 0.5
+        nodes_dammy[node_id] = nodes_new[node_id]
+    edges_dammy.extend(edges_new)
+    return create_tree_elements(nodes_dammy, edges_dammy)
+
+# ############################## app ####################################
 # アプリ実行
 if __name__ == '__main__':
     app.run_server(host="0.0.0.0", port=8080, debug=IS_DEBUG)
