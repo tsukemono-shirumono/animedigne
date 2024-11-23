@@ -13,6 +13,7 @@ class NodeInfo:
         self.extra_info = ""
         self._data = None
         self.extra_info = ""
+        self.opacity = 1
         # self.bgcolor = "MediumVioletRed"
     def trans_view_title(self, title):
         # 空白を改行化
