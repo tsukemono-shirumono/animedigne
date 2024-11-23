@@ -13,7 +13,7 @@ NY_INIT = 10 # 初期ノードのy数
 DELTA_INIT = 250 # 初期ノードの間隔
 N_NEW_NODE = 3 # クリック時に追加するノード数
 LENGTH_EDGE = 180 # クリック時に追加するノードの距離
-ANGLE_NEW_NODE = np.pi/4 # クリック時に追加するノードの角度
+ANGLE_NEW_NODE = np.pi/3.5 # クリック時に追加するノードの角度
 SIZE_NODE = 75 # ノードのサイズ
 IS_DEBUG = bool(os.getenv("IS_DEBUG", True))
 
