@@ -41,13 +41,13 @@ class SubInfo(NodeInfo):
     def bgcolor(self) -> str:
         kind = self.data.get("SubinfoKind", None)
         return {
-            "cv": "#000000",
-            "duration": "#0b3d7e",
-            "genre": "#0b3d7e",
-            "source": "#0b3d7e",
-            "tag": "#0b3d7e",
-            "thema_song_artist": "#0b3d7e",
-            "year": "#0b3d7e",
+            "cv": "#510060",
+            "duration": "#790053",
+            "genre": "#C6095D",
+            "source": "#DAA520",  # Modified color for "source"
+            "tag": "#FD7E21",
+            "thema_song_artist": "#0F7926",
+            "year": "DimGray",
         }.get(kind, "#0b3d7e")
 class AnimeInfo(NodeInfo):
     def __init__(self, node_id):
