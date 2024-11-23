@@ -261,6 +261,7 @@ def reset_page(n_clicks):
     nodes, edges = init_page()
     return create_tree_elements(nodes, edges)
 
+
 # マウスオーバー（一旦保留）
 # @app.callback(
 #     Output('tree-graph', 'elements', allow_duplicate=True),
